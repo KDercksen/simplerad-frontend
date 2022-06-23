@@ -1,20 +1,23 @@
 import axios from "axios";
 import { Badge } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
+
+export const ApiContext = React.createContext({
+  online: false,
+  setOnline: () => {},
+});
 
 export default function ApiHealthCheck(props) {
-  const [online, setOnline] = useState();
+  const { online, setOnline } = useContext(ApiContext);
 
   useEffect(() => {
     async function doCheck() {
       axios
         .get(process.env.REACT_APP_API_DOMAIN)
         .then((res) => {
-          console.log(res);
           setOnline(true);
         })
         .catch((err) => {
-          console.log(err);
           setOnline(false);
         });
     }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,43 +11,108 @@ import {
   TabPanel,
   Textarea,
   Text,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { SettingsContext } from "./SettingsForm";
 
-export default function ReportEditDisplayTabs(props) {
+function Entity({ children, ...props }) {
+  const [hover, setHover] = useState("");
+  const unselected = useColorModeValue("green.200", "green.800");
+  const selected = useColorModeValue("green.100", "green.700");
+  const color = useColorModeValue("black", "white");
+
+  return (
+    <Text
+      bg={hover ? selected : unselected}
+      color={color}
+      padding="2px 4px"
+      borderRadius={5}
+      as="mark"
+      onMouseOver={(e) => {
+        setHover(true);
+      }}
+      onMouseOut={(e) => {
+        setHover(false);
+      }}
+      cursor="pointer"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+}
+
+export default function ReportEditDisplayTabs({
+  onEntitySelect,
+  onProcessRequest,
+  ...props
+}) {
+  const { settings } = useContext(SettingsContext);
   const [inputText, setInputText] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
 
   const inputIsError = inputText === "";
 
-  function generateDisplay(e) {
-    e.preventDefault();
+  useEffect(() => {
+    function generateDisplayText(responseMap) {
+      const sentencized = responseMap.text;
+      let segments = [];
+      let span;
+      let lastSeen = 0;
+      for (span of responseMap.spans) {
+        const { start, end, text } = span;
+        segments.push(sentencized.slice(lastSeen, start));
+        segments.push(
+          <Entity
+            onClick={(e) => {
+              onEntitySelect(text);
+            }}
+            key={start.toString()}
+          >
+            {text}
+          </Entity>
+        );
+        lastSeen = end;
+      }
+      segments.push(sentencized.slice(lastSeen));
+      return segments;
+    }
     async function callApi() {
       axios
-        .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [{ text: inputText }])
+        .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [
+          { text: inputText, model_name: settings.entities.engine },
+        ])
         .then((r) => {
-          setDisplayText(JSON.stringify(r.data, null, 2));
+          onEntitySelect(null);
+          setDisplayText(generateDisplayText(r.data[0]));
           setTabIndex(1);
           toast({
             status: "success",
             duration: 2000,
-            title: "Processing successful.",
+            title: "Entity linking successful.",
+            isClosable: true,
           });
         })
         .catch((r) => {
           toast({
             status: "error",
             duration: 5000,
-            title: "Unable to process.",
+            title: "Unable to link entities.",
             description: r.toString(),
+            isClosable: true,
           });
         });
     }
-    callApi();
-  }
+    if (submitted) {
+      setSubmitted(false);
+      callApi();
+    }
+  }, [onEntitySelect, submitted, settings, inputText, toast]);
 
   return (
     <Box {...props}>
@@ -63,13 +128,22 @@ export default function ReportEditDisplayTabs(props) {
 
         <TabPanels>
           <TabPanel>
-            <form onSubmit={generateDisplay}>
+            <form
+              onSubmit={(e) => {
+                setSubmitted(true);
+                onProcessRequest(inputText);
+                e.preventDefault();
+              }}
+            >
               <FormControl isInvalid={inputIsError}>
                 <Textarea
                   value={inputText}
                   placeholder="..."
                   h="300px"
-                  onChange={(e) => setInputText(e.target.value)}
+                  onChange={(e) => {
+                    setSubmitted(false);
+                    setInputText(e.target.value);
+                  }}
                 />
                 <FormHelperText>
                   Enter radiology report to process.
@@ -81,9 +155,7 @@ export default function ReportEditDisplayTabs(props) {
             </form>
           </TabPanel>
 
-          <TabPanel>
-            <Text as="pre">{displayText}</Text>
-          </TabPanel>
+          <TabPanel whiteSpace="pre">{displayText}</TabPanel>
         </TabPanels>
       </Tabs>
     </Box>
