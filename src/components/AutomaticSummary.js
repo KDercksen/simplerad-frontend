@@ -22,6 +22,7 @@ export default function AutomaticSummary(props) {
           toast({
             status: "success",
             title: "Summarization successful.",
+            description: `Request took ${r.headers["x-process-time"]}`,
             duration: 2000,
             isClosable: true,
           });

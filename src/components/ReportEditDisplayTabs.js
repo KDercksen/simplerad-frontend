@@ -95,6 +95,7 @@ export default function ReportEditDisplayTabs({
             status: "success",
             duration: 2000,
             title: "Entity linking successful.",
+            description: `Request took ${r.headers["x-process-time"]}`,
             isClosable: true,
           });
         })
