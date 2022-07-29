@@ -5,8 +5,9 @@ import axios from "axios";
 // sensible defaults
 export const defaultSettings = {
   entities: { engine: "simstring" },
-  summarize: { engine: "custom", prompt: "" },
+  summarize: { engine: "transformer_abstractive", prompt: "" },
   search: { engine: "simstring" },
+  frequency: { engine: "simstring" },
 };
 
 export const SettingsContext = React.createContext({
@@ -134,6 +135,33 @@ export default function SettingsForm(props) {
                   setSettings({ summarize: { prompt: e.target.value } });
                 }}
               />
+            </VStack>
+          </Box>
+          <Heading mt={4} as="h2" fontWeight="normal" size="md">
+            Frequency
+          </Heading>
+          <Box
+            display="inline-flex"
+            p={3}
+            mt={4}
+            borderWidth={1}
+            borderRadius={10}
+          >
+            <VStack>
+              <Select
+                defaultValue={settingsConfig.frequency.engine.default}
+                onChange={(e) => {
+                  setSettings({ frequency: { engine: e.target.value } });
+                }}
+              >
+                {settingsConfig.frequency.engine.values.map((x, i) => {
+                  return (
+                    <option key={i} value={x}>
+                      {x}
+                    </option>
+                  );
+                })}
+              </Select>
             </VStack>
           </Box>
         </>

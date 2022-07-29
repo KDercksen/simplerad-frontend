@@ -3,9 +3,9 @@ import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "./SettingsForm";
 import axios from "axios";
 
-export default function AutomaticSummary(props) {
+export default function AutomaticSummary({ reportText, ...props }) {
   const { settings } = useContext(SettingsContext);
-  const [summaries, setSummaries] = useState([""]);
+  const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
@@ -14,10 +14,10 @@ export default function AutomaticSummary(props) {
       setLoading(true);
       axios
         .post(process.env.REACT_APP_SUMMARIZE_ENDPOINT, [
-          { text: props.request, model_name: settings.summarize.engine },
+          { text: reportText, model_name: settings.summarize.engine },
         ])
         .then((r) => {
-          setSummaries(r.data.map((x) => x.summary));
+          setSummary(r.data[0].summary);
           setLoading(false);
           toast({
             status: "success",
@@ -28,7 +28,7 @@ export default function AutomaticSummary(props) {
           });
         })
         .catch((e) => {
-          setSummaries(["Could not summarize, API unreachable?"]);
+          setSummary("Could not summarize, API unreachable?");
           setLoading(false);
           toast({
             status: "error",
@@ -39,10 +39,10 @@ export default function AutomaticSummary(props) {
           });
         });
     }
-    if (props.request !== null) {
+    if (reportText !== null) {
       callApi();
     }
-  }, [toast, settings.summarize.engine, props.request]);
+  }, [reportText, settings.summarize.engine, toast]);
 
   return (
     <Box {...props}>
@@ -55,11 +55,9 @@ export default function AutomaticSummary(props) {
       {loading ? (
         <SkeletonText noOfLines={5} mt={2} spacing={3} />
       ) : (
-        summaries.map((x, i) => (
-          <Box key={i.toString()} borderRadius={2} borderWidth={1} p={3} mt={2}>
-            <Text>{x}</Text>
-          </Box>
-        ))
+        <Box borderRadius={2} borderWidth={1} p={3} mt={2}>
+          <Text>{summary}</Text>
+        </Box>
       )}
     </Box>
   );

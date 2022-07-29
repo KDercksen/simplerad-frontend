@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -51,69 +51,63 @@ export default function ReportEditDisplayTabs({
 }) {
   const { settings } = useContext(SettingsContext);
   const [inputText, setInputText] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
 
   const inputIsError = inputText === "";
 
-  useEffect(() => {
-    function generateDisplayText(responseMap) {
-      const sentencized = responseMap.text;
-      let segments = [];
-      let span;
-      let lastSeen = 0;
-      for (span of responseMap.spans) {
-        const { start, end, text } = span;
-        segments.push(sentencized.slice(lastSeen, start));
-        segments.push(
-          <Entity
-            onClick={(e) => {
-              onEntitySelect(text);
-            }}
-            key={start.toString()}
-          >
-            {text}
-          </Entity>
-        );
-        lastSeen = end;
-      }
-      segments.push(sentencized.slice(lastSeen));
-      return segments;
+  function generateDisplayText(responseMap) {
+    const sentencized = responseMap.text;
+    let segments = [];
+    let span;
+    let lastSeen = 0;
+    for (span of responseMap.spans) {
+      const { start, end, text } = span;
+      segments.push(sentencized.slice(lastSeen, start));
+      segments.push(
+        <Entity
+          onClick={(e) => {
+            onEntitySelect(text);
+          }}
+          key={start.toString()}
+        >
+          {text}
+        </Entity>
+      );
+      lastSeen = end;
     }
-    async function callApi() {
-      axios
-        .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [
-          { text: inputText, model_name: settings.entities.engine },
-        ])
-        .then((r) => {
-          onEntitySelect(null);
-          setDisplayText(generateDisplayText(r.data[0]));
-          setTabIndex(1);
-          toast({
-            status: "success",
-            duration: 2000,
-            title: "Entity linking successful.",
-            description: `Request took ${r.headers["x-process-time"]}`,
-            isClosable: true,
-          });
-        })
-        .catch((r) => {
-          toast({
-            status: "error",
-            duration: 5000,
-            title: "Unable to link entities.",
-            description: r.toString(),
-            isClosable: true,
-          });
+    segments.push(sentencized.slice(lastSeen));
+    return segments;
+  }
+
+  async function callApi() {
+    axios
+      .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [
+        { text: inputText, model_name: settings.entities.engine },
+      ])
+      .then((r) => {
+        onEntitySelect(null);
+        setDisplayText(generateDisplayText(r.data[0]));
+        setTabIndex(1);
+        toast({
+          status: "success",
+          duration: 2000,
+          title: "Entity linking successful.",
+          description: `Request took ${r.headers["x-process-time"]}`,
+          isClosable: true,
         });
-    }
-    if (submitted) {
-      setSubmitted(false);
-      callApi();
-    }
-  }, [onEntitySelect, submitted, settings, inputText, toast]);
+      })
+      .catch((r) => {
+        toast({
+          status: "error",
+          duration: 5000,
+          title: "Unable to link entities.",
+          description: r.toString(),
+          isClosable: true,
+        });
+      });
+  }
 
   return (
     <Box {...props}>
@@ -131,8 +125,8 @@ export default function ReportEditDisplayTabs({
           <TabPanel>
             <form
               onSubmit={(e) => {
-                setSubmitted(true);
                 onProcessRequest(inputText);
+                callApi();
                 e.preventDefault();
               }}
             >
@@ -142,7 +136,6 @@ export default function ReportEditDisplayTabs({
                   placeholder="..."
                   h="300px"
                   onChange={(e) => {
-                    setSubmitted(false);
                     setInputText(e.target.value);
                   }}
                 />

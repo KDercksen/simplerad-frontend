@@ -1,12 +1,17 @@
 import AutomaticSummary from "./AutomaticSummary";
 import EntityInfo from "./EntityInfo";
 import ReportEditDisplayTabs from "./ReportEditDisplayTabs";
+import EntityFrequency from "./EntityFrequency.js";
 import { HStack, Spacer, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 export default function AggregatedView(props) {
-  const [request, setRequest] = useState(null);
+  const [reportText, setReportText] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
+
+  const handleReportSubmit = (reportText) => {
+    setReportText(reportText);
+  };
 
   return (
     <VStack w="full" h="100%">
@@ -17,20 +22,28 @@ export default function AggregatedView(props) {
           borderWidth={3}
           borderRadius={10}
           // custom props
-          onProcessRequest={setRequest}
+          onProcessRequest={handleReportSubmit}
           onEntitySelect={setSelectedEntity}
         />
-        {/* <VStack h="full"> */}
-        <EntityInfo
-          h="300px"
-          overflow="auto"
-          w="30%"
-          p={3}
-          borderWidth={3}
-          borderRadius={10}
-          selectedEntity={selectedEntity}
-        />
-        {/* </VStack> */}
+        <VStack w="30%" h="full">
+          <EntityInfo
+            h="300px"
+            overflow="auto"
+            p={3}
+            borderWidth={3}
+            borderRadius={10}
+            selectedEntity={selectedEntity}
+          />
+          <EntityFrequency
+            h="110px"
+            overflow="hidden"
+            w="full"
+            p={3}
+            borderWidth={3}
+            borderRadius={10}
+            selectedEntity={selectedEntity}
+          />
+        </VStack>
       </HStack>
       {/* NOTE: the below 'pr' is unnecessary when more items are added */}
       <HStack pr={2} w="full" align="flex-start" justify="flex-start">
@@ -40,7 +53,7 @@ export default function AggregatedView(props) {
           borderWidth={3}
           borderRadius={10}
           overflow="auto"
-          request={request}
+          reportText={reportText}
         />
         <Spacer w="30%" />
       </HStack>

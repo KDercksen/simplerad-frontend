@@ -42,7 +42,6 @@ export default function EntityInfo({ selectedEntity, ...props }) {
 
   useEffect(() => {
     function searchEntity(term) {
-      console.log(term);
       setLoading(true);
       axios
         .post(process.env.REACT_APP_SEARCH_ENDPOINT, [
