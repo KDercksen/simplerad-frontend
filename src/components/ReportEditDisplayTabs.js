@@ -149,7 +149,11 @@ export default function ReportEditDisplayTabs({
             </form>
           </TabPanel>
 
-          <TabPanel whiteSpace="pre-wrap">{displayText}</TabPanel>
+          <TabPanel whiteSpace="pre-wrap">
+            <Box borderRadius={10} borderWidth={1} p={3}>
+              {displayText}
+            </Box>
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Box>

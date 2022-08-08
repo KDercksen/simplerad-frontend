@@ -47,6 +47,12 @@ export default function EntityFrequency({ selectedEntity, ...props }) {
           Select an entity to see frequency information...
         </Text>
       );
+    } else if (frequency === null) {
+      return (
+        <Text color="gray.500">
+          No frequency information available for this entity
+        </Text>
+      );
     } else {
       return (
         <Stat>
