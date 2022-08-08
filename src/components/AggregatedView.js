@@ -29,6 +29,7 @@ export default function AggregatedView(props) {
           <EntityInfo
             h="300px"
             overflow="auto"
+            w="full"
             p={3}
             borderWidth={3}
             borderRadius={10}
