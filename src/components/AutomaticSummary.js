@@ -1,4 +1,4 @@
-import { Badge, Box, SkeletonText, Text, useToast } from "@chakra-ui/react";
+import { Box, Text, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "./SettingsForm";
 import axios from "axios";
@@ -6,7 +6,7 @@ import axios from "axios";
 export default function AutomaticSummary({ reportText, ...props }) {
   const { settings } = useContext(SettingsContext);
   const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -44,21 +44,26 @@ export default function AutomaticSummary({ reportText, ...props }) {
     }
   }, [reportText, settings.summarize.engine, toast]);
 
+  function content() {
+    if (loading) {
+      return <Text color="gray.500">Loading...</Text>;
+    } else if (reportText === null || reportText === "") {
+      return (
+        <Text color="gray.500">Submit a report to generate a summary...</Text>
+      );
+    } else {
+      return <Text>{summary}</Text>;
+    }
+  }
+
   return (
     <Box {...props}>
       <Box>
-        <Badge colorScheme="purple">automated</Badge>
         <Text fontWeight="semibold" fontSize="md">
           Summary:
         </Text>
       </Box>
-      {loading ? (
-        <SkeletonText noOfLines={5} mt={2} spacing={3} />
-      ) : (
-        <Box borderRadius={2} borderWidth={1} p={3} mt={2}>
-          <Text>{summary}</Text>
-        </Box>
-      )}
+      <Box mt={3}>{content()}</Box>
     </Box>
   );
 }
