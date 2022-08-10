@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Stat,
   StatLabel,
   StatHelpText,
@@ -39,7 +40,7 @@ export default function EntityFrequency({ selectedEntity, ...props }) {
 
   function content() {
     if (loading) {
-      return <Text color="gray.500">Loading...</Text>;
+      return <CircularProgress isIndeterminate />;
     }
     if (selectedEntity === null || selectedEntity === "") {
       return (

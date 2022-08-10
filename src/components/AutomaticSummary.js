@@ -1,4 +1,4 @@
-import { Box, Text, useToast } from "@chakra-ui/react";
+import { Box, CircularProgress, Text, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "./SettingsForm";
 import axios from "axios";
@@ -46,7 +46,7 @@ export default function AutomaticSummary({ reportText, ...props }) {
 
   function content() {
     if (loading) {
-      return <Text color="gray.500">Loading...</Text>;
+      return <CircularProgress isIndeterminate />;
     } else if (reportText === null || reportText === "") {
       return (
         <Text color="gray.500">Submit a report to generate a summary...</Text>

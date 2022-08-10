@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Heading,
   Text,
   Tag,
@@ -67,7 +68,7 @@ export default function EntityInfo({ selectedEntity, ...props }) {
 
   function content() {
     if (loading) {
-      return <Text color="gray.500">Loading...</Text>;
+      return <CircularProgress isIndeterminate />;
     } else if (selectedEntity === "" || selectedEntity === null) {
       return (
         <Text color="gray.500">
