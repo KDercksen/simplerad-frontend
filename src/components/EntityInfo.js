@@ -43,7 +43,6 @@ export default function EntityInfo({ selectedEntity, ...props }) {
 
   useEffect(() => {
     function searchEntity(term) {
-      setLoading(true);
       axios
         .post(process.env.REACT_APP_SEARCH_ENDPOINT, [
           {
@@ -57,11 +56,13 @@ export default function EntityInfo({ selectedEntity, ...props }) {
         })
         .catch((e) => {
           setResults([]);
-          setLoading(false);
           console.log(e);
+          setLoading(false);
         });
     }
+
     if (!(selectedEntity === null || selectedEntity === "")) {
+      setLoading(true);
       searchEntity(selectedEntity);
     }
   }, [settings.search.engine, selectedEntity]);

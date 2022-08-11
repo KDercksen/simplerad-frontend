@@ -1,5 +1,5 @@
 import { Button, Spacer, VStack } from "@chakra-ui/react";
-import { FaCog, FaHome } from "react-icons/fa";
+import { FaCog, FaHome, FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 export default function Navigation() {
@@ -15,9 +15,18 @@ export default function Navigation() {
       >
         <h2>simplerad</h2>
       </Button>
+      <Button
+        w="full"
+        variant="outline"
+        leftIcon={<FaSearch />}
+        as={Link}
+        to="/search"
+      >
+        Search
+      </Button>
       <Spacer />
       <Button
-        w="100%"
+        w="full"
         leftIcon={<FaCog />}
         variant="outline"
         as={Link}

@@ -16,8 +16,10 @@ export const SettingsContext = React.createContext({
 });
 
 export default function SettingsForm(props) {
-  const { setSettings } = useContext(SettingsContext);
+  const { settings, setSettings } = useContext(SettingsContext);
   const [settingsConfig, setSettingsConfig] = useState(null);
+
+  console.log(settings);
 
   useEffect(() => {
     if (settingsConfig === null) {
@@ -64,9 +66,12 @@ export default function SettingsForm(props) {
             borderRadius={10}
           >
             <Select
-              defaultValue={settingsConfig.entities.engine.default}
+              defaultValue={settings.entities.engine}
               onChange={(e) => {
-                setSettings({ entities: { engine: e.target.value } });
+                setSettings({
+                  ...settings,
+                  entities: { engine: e.target.value },
+                });
               }}
             >
               {settingsConfig.entities.engine.values.map((x, i) => {
@@ -89,9 +94,12 @@ export default function SettingsForm(props) {
             borderRadius={10}
           >
             <Select
-              defaultValue={settingsConfig.search.engine.default}
+              defaultValue={settings.search.engine}
               onChange={(e) => {
-                setSettings({ search: { engine: e.target.value } });
+                setSettings({
+                  ...settings,
+                  search: { engine: e.target.value },
+                });
               }}
             >
               {settingsConfig.search.engine.values.map((x, i) => {
@@ -115,9 +123,12 @@ export default function SettingsForm(props) {
           >
             <VStack>
               <Select
-                defaultValue={settingsConfig.summarize.engine.default}
+                defaultValue={settings.summarize.engine}
                 onChange={(e) => {
-                  setSettings({ summarize: { engine: e.target.value } });
+                  setSettings({
+                    ...settings,
+                    summarize: { engine: e.target.value },
+                  });
                 }}
               >
                 {settingsConfig.summarize.engine.values.map((x, i) => {
@@ -130,9 +141,13 @@ export default function SettingsForm(props) {
               </Select>
               <Input
                 type="text"
-                defaultValue={settingsConfig.summarize.prompt.default}
+                placeholder="prompt..."
+                defaultValue={settings.summarize.prompt}
                 onChange={(e) => {
-                  setSettings({ summarize: { prompt: e.target.value } });
+                  setSettings({
+                    ...settings,
+                    summarize: { prompt: e.target.value },
+                  });
                 }}
               />
             </VStack>
@@ -149,9 +164,12 @@ export default function SettingsForm(props) {
           >
             <VStack>
               <Select
-                defaultValue={settingsConfig.frequency.engine.default}
+                defaultValue={settings.frequency.engine}
                 onChange={(e) => {
-                  setSettings({ frequency: { engine: e.target.value } });
+                  setSettings({
+                    ...settings,
+                    frequency: { engine: e.target.value },
+                  });
                 }}
               >
                 {settingsConfig.frequency.engine.values.map((x, i) => {

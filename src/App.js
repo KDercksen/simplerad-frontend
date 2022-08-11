@@ -1,4 +1,5 @@
 import AggregatedView from "./components/AggregatedView";
+import SearchView from "./components/SearchView";
 import Navigation from "./components/Navigation";
 import StatusBar from "./components/StatusBar";
 import SettingsForm from "./components/SettingsForm";
@@ -22,6 +23,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<AggregatedView />} />
               <Route path="/settings" element={<SettingsForm />} />
+              <Route path="/search" element={<SearchView />} />
               {/* <Route path="*" element={<p>There is nothing here...</p>} /> */}
             </Routes>
           </VStack>
