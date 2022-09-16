@@ -8,6 +8,7 @@ export const defaultSettings = {
   summarize: { engine: "transformer_abstractive", prompt: "" },
   search: { engine: "simstring" },
   frequency: { engine: "simstring" },
+  explanation: { engine: "gpt3" },
 };
 
 export const SettingsContext = React.createContext({
@@ -173,6 +174,36 @@ export default function SettingsForm(props) {
                 }}
               >
                 {settingsConfig.frequency.engine.values.map((x, i) => {
+                  return (
+                    <option key={i} value={x}>
+                      {x}
+                    </option>
+                  );
+                })}
+              </Select>
+            </VStack>
+          </Box>
+          <Heading mt={4} as="h2" fontWeight="normal" size="md">
+            Explanation
+          </Heading>
+          <Box
+            display="inline-flex"
+            p={3}
+            mt={4}
+            borderWidth={1}
+            borderRadius={10}
+          >
+            <VStack>
+              <Select
+                defaultValue={settings.explanation.engine}
+                onChange={(e) => {
+                  setSettings({
+                    ...settings,
+                    explanation: { engine: e.target.value },
+                  });
+                }}
+              >
+                {settingsConfig.explanation.engine.values.map((x, i) => {
                   return (
                     <option key={i} value={x}>
                       {x}
