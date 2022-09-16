@@ -134,7 +134,7 @@ export default function ReportEditDisplayTabs({
                 <Textarea
                   value={inputText}
                   placeholder="..."
-                  h="300px"
+                  h="450px"
                   onChange={(e) => {
                     setInputText(e.target.value);
                   }}
