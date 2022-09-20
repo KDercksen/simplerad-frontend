@@ -74,7 +74,15 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
   }
 
   function renderCache() {
-    if (cache === null || cache.length === 0) {
+    if (loading) {
+      return <CircularProgress isIndeterminate />;
+    } else if (selectedEntity === null || selectedEntity === "") {
+      return (
+        <Text size="sm" color="gray.500">
+          Select an entity to view explanations...
+        </Text>
+      );
+    } else if (cache === null || cache.length === 0) {
       return (
         <Text size="sm" color="gray.400">
           No cached explanations found

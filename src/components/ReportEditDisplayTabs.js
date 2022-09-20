@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
   Tabs,
@@ -51,6 +52,7 @@ export default function ReportEditDisplayTabs({
 }) {
   const { settings } = useContext(SettingsContext);
   const [inputText, setInputText] = useState("");
+  const [loading, setLoading] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
@@ -82,6 +84,8 @@ export default function ReportEditDisplayTabs({
   }
 
   async function callApi() {
+    setLoading(true);
+    setTabIndex(1);
     axios
       .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [
         { text: inputText, model_name: settings.entities.engine },
@@ -89,7 +93,7 @@ export default function ReportEditDisplayTabs({
       .then((r) => {
         onEntitySelect(null);
         setDisplayText(generateDisplayText(r.data[0]));
-        setTabIndex(1);
+        setLoading(false);
         toast({
           status: "success",
           duration: 2000,
@@ -99,6 +103,8 @@ export default function ReportEditDisplayTabs({
         });
       })
       .catch((r) => {
+        setTabIndex(0);
+        setLoading(false);
         toast({
           status: "error",
           duration: 5000,
@@ -151,7 +157,7 @@ export default function ReportEditDisplayTabs({
 
           <TabPanel whiteSpace="pre-wrap">
             <Box borderRadius={10} borderWidth={1} p={3}>
-              {displayText}
+              {loading ? <CircularProgress isIndeterminate /> : displayText}
             </Box>
           </TabPanel>
         </TabPanels>
