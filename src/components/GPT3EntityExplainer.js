@@ -17,19 +17,22 @@ import { SettingsContext } from "./SettingsForm";
 
 export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
   const { settings } = useContext(SettingsContext);
+  const [proposedText, setProposedText] = useState("");
   const [cache, setCache] = useState(null);
   const [loading, setLoading] = useState(false);
 
   async function generateExplanation() {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}/propose`, [
+      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}propose/`, [
         { text: selectedEntity, model_name: settings.explanation.engine },
       ])
       .then((r) => {
+        setProposedText(r.data[0].data[0]);
         setLoading(false);
       })
       .catch((e) => {
+        setProposedText("");
         setLoading(false);
       });
   }
@@ -37,13 +40,16 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
   async function getExplanationsCache() {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}/propose`, [
+      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}get/`, [
         { text: selectedEntity, model_name: settings.explanation.engine },
       ])
       .then((r) => {
+        console.log(r.data[0].data);
+        setCache(r.data[0].data);
         setLoading(false);
       })
       .catch((e) => {
+        setCache(null);
         setLoading(false);
       });
   }
@@ -51,15 +57,40 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
   async function addExplanationToCache() {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}/propose`, [
-        { text: selectedEntity, model_name: settings.explanation.engine },
+      .put(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}add/`, [
+        {
+          text: proposedText,
+          model_name: settings.explanation.engine,
+          term: selectedEntity,
+        },
       ])
       .then((r) => {
+        getExplanationsCache();
         setLoading(false);
       })
       .catch((e) => {
         setLoading(false);
       });
+  }
+
+  function renderCache() {
+    if (cache === null || cache.length === 0) {
+      return (
+        <Text size="sm" color="gray.400">
+          No cached explanations found
+        </Text>
+      );
+    } else {
+      return cache.map((t) => {
+        return (
+          <Box my={2} p={1} borderWidth={1}>
+            <Text size="sm" color="gray.400">
+              {t}
+            </Text>
+          </Box>
+        );
+      });
+    }
   }
 
   return (
@@ -75,10 +106,30 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
             </AccordionButton>
           </h2>
           <AccordionPanel>
-            <Textarea />
+            <Textarea
+              value={proposedText}
+              disabled={
+                selectedEntity === null || selectedEntity === "" || loading
+              }
+              onChange={(e) => {
+                setProposedText(e.target.value);
+              }}
+            />
             <HStack pt={3}>
-              <Button w="full">Generate</Button>
-              <Button w="full">Add to cache</Button>
+              <Button
+                isLoading={loading}
+                onClick={generateExplanation}
+                w="full"
+              >
+                Generate
+              </Button>
+              <Button
+                isLoading={loading}
+                onClick={addExplanationToCache}
+                w="full"
+              >
+                Add to cache
+              </Button>
             </HStack>
           </AccordionPanel>
         </AccordionItem>
@@ -86,15 +137,7 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
       <Text mt={5} size="sm" color="gray.500">
         Cached explanations:
       </Text>
-      {cached.map((t) => {
-        return (
-          <Box my={2} p={1} borderWidth={1}>
-            <Text size="sm" color="gray.400">
-              {t}
-            </Text>
-          </Box>
-        );
-      })}
+      {renderCache()}
     </Box>
   );
 }
