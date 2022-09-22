@@ -5,6 +5,10 @@ import {
   CircularProgress,
   FormControl,
   FormHelperText,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Tabs,
   Tab,
   TabList,
@@ -17,6 +21,27 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { SettingsContext } from "./SettingsForm";
+import sampleReports from "../assets/sample_reports.json";
+import { FaChevronDown } from "react-icons/fa";
+
+function SampleReportMenu({ setInputText, ...props }) {
+  return (
+    <Menu {...props}>
+      <MenuButton as={Button} rightIcon={<FaChevronDown />}>
+        Samples
+      </MenuButton>
+      <MenuList>
+        {sampleReports.map((s, i) => {
+          return (
+            <MenuItem onClick={() => setInputText(s.verslag)} key={i}>
+              Sample {i + 1}
+            </MenuItem>
+          );
+        })}
+      </MenuList>
+    </Menu>
+  );
+}
 
 function Entity({ children, ...props }) {
   const [hover, setHover] = useState("");
@@ -137,9 +162,11 @@ export default function ReportEditDisplayTabs({
               }}
             >
               <FormControl isInvalid={inputIsError}>
+                <SampleReportMenu setInputText={setInputText} />
                 <Textarea
                   value={inputText}
                   placeholder="..."
+                  mt={5}
                   h="450px"
                   onChange={(e) => {
                     setInputText(e.target.value);

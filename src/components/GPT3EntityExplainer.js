@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import {
   Accordion,
@@ -18,7 +18,7 @@ import { SettingsContext } from "./SettingsForm";
 export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
   const { settings } = useContext(SettingsContext);
   const [proposedText, setProposedText] = useState("");
-  const [cache, setCache] = useState(null);
+  const [cache, setCache] = useState([]);
   const [loading, setLoading] = useState(false);
 
   async function generateExplanation() {
@@ -37,22 +37,26 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
       });
   }
 
-  async function getExplanationsCache() {
-    setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}get/`, [
-        { text: selectedEntity, model_name: settings.explanation.engine },
-      ])
-      .then((r) => {
-        console.log(r.data[0].data);
-        setCache(r.data[0].data);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setCache(null);
-        setLoading(false);
-      });
-  }
+  useEffect(() => {
+    async function getExplanationsCache() {
+      setLoading(true);
+      axios
+        .post(`${process.env.REACT_APP_EXPLANATION_ENDPOINT}get/`, [
+          { text: selectedEntity, model_name: settings.explanation.engine },
+        ])
+        .then((r) => {
+          setCache(r.data[0].data);
+          setLoading(false);
+        })
+        .catch((e) => {
+          setCache([]);
+          setLoading(false);
+        });
+    }
+    if (!(selectedEntity === null || selectedEntity === "")) {
+      getExplanationsCache();
+    }
+  }, [settings.explanation.engine, selectedEntity]);
 
   async function addExplanationToCache() {
     setLoading(true);
@@ -65,7 +69,8 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
         },
       ])
       .then((r) => {
-        getExplanationsCache();
+        const tmp = [proposedText];
+        setCache([...cache, ...tmp]);
         setLoading(false);
       })
       .catch((e) => {
@@ -82,16 +87,16 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
           Select an entity to view explanations...
         </Text>
       );
-    } else if (cache === null || cache.length === 0) {
+    } else if (cache.length === 0) {
       return (
         <Text size="sm" color="gray.400">
           No cached explanations found
         </Text>
       );
     } else {
-      return cache.map((t) => {
+      return cache.map((t, i) => {
         return (
-          <Box my={2} p={1} borderWidth={1}>
+          <Box my={2} p={1} key={i} borderWidth={1}>
             <Text size="sm" color="gray.400">
               {t}
             </Text>
