@@ -1,8 +1,8 @@
 import AutomaticSummary from "./AutomaticSummary";
 import EntityInfo from "./EntityInfo";
 import ReportEditDisplayTabs from "./ReportEditDisplayTabs";
-import EntityFrequency from "./EntityFrequency.js";
-import GPT3EntityExplainer from "./GPT3EntityExplainer.js";
+import EntityFrequency from "./EntityFrequency";
+import GPT3EntityExplainer from "./GPT3EntityExplainer";
 import { HStack, Spacer, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 

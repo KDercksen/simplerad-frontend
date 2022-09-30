@@ -1,4 +1,10 @@
-import { Box, CircularProgress, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Checkbox,
+  CircularProgress,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { SettingsContext } from "./SettingsForm";
 import axios from "axios";
@@ -7,6 +13,7 @@ export default function AutomaticSummary({ reportText, ...props }) {
   const { settings } = useContext(SettingsContext);
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
+  const [enabled, setEnabled] = useState(true);
   const toast = useToast();
 
   useEffect(() => {
@@ -39,13 +46,15 @@ export default function AutomaticSummary({ reportText, ...props }) {
           });
         });
     }
-    if (reportText !== null) {
+    if (reportText !== null && enabled) {
       callApi();
     }
-  }, [reportText, settings.summarize.engine, toast]);
+  }, [reportText, settings.summarize.engine, toast, enabled]);
 
   function content() {
-    if (loading) {
+    if (!enabled) {
+      return <Text color="gray.500">Summarization disabled...</Text>;
+    } else if (loading) {
       return <CircularProgress isIndeterminate />;
     } else if (reportText === null || reportText === "") {
       return (
@@ -58,6 +67,14 @@ export default function AutomaticSummary({ reportText, ...props }) {
 
   return (
     <Box {...props}>
+      <Checkbox
+        defaultChecked
+        onChange={(e) => {
+          setEnabled(e.target.checked);
+        }}
+      >
+        Enabled
+      </Checkbox>
       <Box>
         <Text fontWeight="semibold" fontSize="md">
           Summary:

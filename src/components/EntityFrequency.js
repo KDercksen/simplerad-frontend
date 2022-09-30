@@ -51,7 +51,7 @@ export default function EntityFrequency({ selectedEntity, ...props }) {
     } else if (frequency === null) {
       return (
         <Text color="gray.500">
-          No frequency information available for this entity
+          No frequency information available for this entity.
         </Text>
       );
     } else {
