@@ -5,7 +5,6 @@ import {
   Text,
   Tag,
   Link,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { SettingsContext } from "./SettingsForm";
@@ -13,11 +12,15 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 function Entity({ score, entity, ...props }) {
-  const linkColor = useColorModeValue("gray.500", "gray.400");
+  const linkColor = "umc.grijs2";
   return (
     <Box {...props}>
-      <Heading size="md">{entity.title}</Heading>
-      <Text size="sm">{entity.description}</Text>
+      <Heading color="umc.grijs1" fontWeight="bold" size="md">
+        {entity.title}
+      </Heading>
+      <Text color="umc.grijs1" size="sm">
+        {entity.description}
+      </Text>
       {entity.url === "" ? (
         ""
       ) : (
@@ -26,10 +29,10 @@ function Entity({ score, entity, ...props }) {
           <ExternalLinkIcon ml={1} mr={3} />
         </Link>
       )}
-      <Tag variant="subtle" colorScheme="teal" mr={3}>
+      <Tag variant="subtle" bg="umc.lichtblauw" color="white" mr={3}>
         {entity.source}: {entity.source_id}
       </Tag>
-      <Tag variant="subtle" colorScheme="teal">
+      <Tag variant="subtle" bg="umc.lichtblauw" color="white">
         Score: {score.toFixed(2)}
       </Tag>
     </Box>
@@ -72,17 +75,27 @@ export default function EntityInfo({ selectedEntity, ...props }) {
       return <CircularProgress isIndeterminate />;
     } else if (selectedEntity === "" || selectedEntity === null) {
       return (
-        <Text color="gray.500">
+        <Text color="umc.grijs2">
           Select an entity to view more information...
         </Text>
       );
     } else if (selectedEntity !== "" && results.length === 0) {
       return (
-        <Text color="gray.500">No results found for {selectedEntity}.</Text>
+        <Text color="umc.grijs2">No results found for {selectedEntity}.</Text>
       );
     } else {
       return results.map((x, i) => {
-        return <Entity pb={3} key={i} {...x} />;
+        return (
+          <Entity
+            bg="umc.grijs4"
+            borderRadius={5}
+            mb={3}
+            px={2}
+            py={1}
+            key={i}
+            {...x}
+          />
+        );
       });
     }
   }

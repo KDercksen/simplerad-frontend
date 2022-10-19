@@ -9,7 +9,7 @@ export default function Navigation() {
         leftIcon={<FaHome />}
         fontWeight="bold"
         fontSize="2xl"
-        variant="ghost"
+        variant="solid"
         as={Link}
         to="/"
       >
@@ -17,8 +17,8 @@ export default function Navigation() {
       </Button>
       <Button
         w="full"
-        variant="outline"
         leftIcon={<FaSearch />}
+        variant="outline"
         as={Link}
         to="/search"
       >

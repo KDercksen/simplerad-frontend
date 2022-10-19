@@ -16,7 +16,6 @@ import {
   TabPanel,
   Textarea,
   Text,
-  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -27,7 +26,7 @@ import { FaChevronDown } from "react-icons/fa";
 function SampleReportMenu({ setInputText, ...props }) {
   return (
     <Menu {...props}>
-      <MenuButton as={Button} rightIcon={<FaChevronDown />}>
+      <MenuButton as={Button} variant="ghost" rightIcon={<FaChevronDown />}>
         Samples
       </MenuButton>
       <MenuList>
@@ -45,9 +44,9 @@ function SampleReportMenu({ setInputText, ...props }) {
 
 function Entity({ children, ...props }) {
   const [hover, setHover] = useState("");
-  const unselected = useColorModeValue("green.200", "green.800");
-  const selected = useColorModeValue("green.100", "green.700");
-  const color = useColorModeValue("black", "white");
+  const unselected = "umc.lichtblauw";
+  const selected = "umc.donkerblauw";
+  const color = "white";
 
   return (
     <Text
@@ -105,6 +104,7 @@ export default function ReportEditDisplayTabs({
       lastSeen = end;
     }
     segments.push(sentencized.slice(lastSeen));
+    console.log(segments);
     return segments;
   }
 
@@ -168,6 +168,7 @@ export default function ReportEditDisplayTabs({
                   placeholder="..."
                   mt={5}
                   h="450px"
+                  bg="umc.grijs4"
                   onChange={(e) => {
                     setInputText(e.target.value);
                   }}
@@ -176,14 +177,20 @@ export default function ReportEditDisplayTabs({
                   Enter radiology report to process.
                 </FormHelperText>
               </FormControl>
-              <Button isDisabled={inputIsError} type="submit" mt={5} w="full">
+              <Button
+                isDisabled={inputIsError}
+                variant="ghost"
+                type="submit"
+                mt={5}
+                w="full"
+              >
                 Submit
               </Button>
             </form>
           </TabPanel>
 
           <TabPanel whiteSpace="pre-wrap">
-            <Box borderRadius={10} borderWidth={1} p={3}>
+            <Box bg="umc.grijs4" borderRadius={10} borderWidth={1} p={3}>
               {loading ? <CircularProgress isIndeterminate /> : displayText}
             </Box>
           </TabPanel>

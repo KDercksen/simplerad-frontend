@@ -1,6 +1,6 @@
 import {
   Box,
-  Checkbox,
+  Switch,
   CircularProgress,
   Text,
   useToast,
@@ -13,7 +13,7 @@ export default function AutomaticSummary({ reportText, ...props }) {
   const { settings } = useContext(SettingsContext);
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -67,15 +67,14 @@ export default function AutomaticSummary({ reportText, ...props }) {
 
   return (
     <Box {...props}>
-      <Checkbox
-        defaultChecked
+      <Switch
         onChange={(e) => {
           setEnabled(e.target.checked);
         }}
       >
         Enabled
-      </Checkbox>
-      <Box>
+      </Switch>
+      <Box mt={3}>
         <Text fontWeight="semibold" fontSize="md">
           Summary:
         </Text>

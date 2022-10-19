@@ -20,19 +20,21 @@ export default function AggregatedView(props) {
         <ReportEditDisplayTabs
           w="full"
           minHeight="600px"
-          borderWidth={3}
-          borderRadius={10}
           // custom props
           onProcessRequest={handleReportSubmit}
           onEntitySelect={setSelectedEntity}
+          borderWidth={3}
+          borderRadius={10}
+          borderColor="umc.grijs3"
         />
         <AutomaticSummary
           p={3}
           w="full"
-          borderWidth={3}
-          borderRadius={10}
           overflow="auto"
           reportText={reportText}
+          borderWidth={3}
+          borderRadius={10}
+          borderColor="umc.grijs3"
         />
       </VStack>
       <VStack w="30%" h="full">
@@ -41,27 +43,29 @@ export default function AggregatedView(props) {
           overflow="auto"
           w="full"
           p={3}
+          selectedEntity={selectedEntity}
           borderWidth={3}
           borderRadius={10}
-          selectedEntity={selectedEntity}
+          borderColor="umc.grijs3"
         />
         <GPT3EntityExplainer
           h="300px"
           overflow="auto"
           w="full"
           p={3}
+          selectedEntity={selectedEntity}
           borderWidth={3}
           borderRadius={10}
-          selectedEntity={selectedEntity}
+          borderColor="umc.grijs3"
         />
         <EntityFrequency
-          h="130px"
-          overflow="hidden"
+          h="260px"
           w="full"
           p={3}
+          selectedEntity={selectedEntity}
           borderWidth={3}
           borderRadius={10}
-          selectedEntity={selectedEntity}
+          borderColor="umc.grijs3"
         />
         <Spacer />
       </VStack>

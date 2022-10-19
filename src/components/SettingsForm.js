@@ -7,7 +7,7 @@ export const defaultSettings = {
   entities: { engine: "simstring" },
   summarize: { engine: "transformer_abstractive", prompt: "" },
   search: { engine: "simstring" },
-  frequency: { engine: "simstring" },
+  frequency: { engine: "transformer" },
   explanation: { engine: "gpt3" },
 };
 

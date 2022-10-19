@@ -19,7 +19,7 @@ export default function App() {
         <HStack p={5} h="100vh" spacing={5}>
           <Navigation />
           <VStack w="full" h="full">
-            <StatusBar w="full" justify="flex-end" />
+            <StatusBar w="full" pb={5} justify="flex-end" />
             <Routes>
               <Route path="/" element={<AggregatedView />} />
               <Route path="/settings" element={<SettingsForm />} />

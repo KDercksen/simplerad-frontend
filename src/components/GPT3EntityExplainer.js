@@ -83,21 +83,28 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
       return <CircularProgress isIndeterminate />;
     } else if (selectedEntity === null || selectedEntity === "") {
       return (
-        <Text size="sm" color="gray.500">
+        <Text size="sm" color="umc.grijs2">
           Select an entity to view explanations...
         </Text>
       );
     } else if (cache.length === 0) {
       return (
-        <Text size="sm" color="gray.400">
+        <Text size="sm" color="umc.grijs2">
           No cached explanations found
         </Text>
       );
     } else {
       return cache.map((t, i) => {
         return (
-          <Box my={2} p={1} key={i} borderWidth={1}>
-            <Text size="sm" color="gray.400">
+          <Box
+            my={2}
+            p={2}
+            bg="umc.grijs4"
+            key={i}
+            borderRadius={2}
+            borderWidth={1}
+          >
+            <Text size="sm" color="umc.grijs1">
               {t}
             </Text>
           </Box>
@@ -114,7 +121,7 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
       <Accordion allowToggle>
         <AccordionItem>
           <h2>
-            <AccordionButton>
+            <AccordionButton bg="umc.grijs4">
               <Box w="full">Click to generate new explanation</Box>
             </AccordionButton>
           </h2>
@@ -133,6 +140,7 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
                 isLoading={loading}
                 onClick={generateExplanation}
                 w="full"
+                variant="solid"
               >
                 Generate
               </Button>
@@ -140,6 +148,7 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
                 isLoading={loading}
                 onClick={addExplanationToCache}
                 w="full"
+                variant="ghost"
               >
                 Add to cache
               </Button>
@@ -147,7 +156,7 @@ export default function GPT3EntityExplainer({ selectedEntity, ...props }) {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Text mt={5} size="sm" color="gray.500">
+      <Text mt={5} size="sm" color="umc.grijs2">
         Cached explanations:
       </Text>
       {renderCache()}
