@@ -38,7 +38,7 @@ export default function ApiHealthCheck(props) {
   return (
     <Badge
       {...props}
-      colorScheme="green"
+      colorScheme={online ? "green" : "red"}
       title={
         online
           ? "API is online and reachable"
