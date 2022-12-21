@@ -24,16 +24,6 @@ export default function Navigation() {
       >
         Search
       </Button>
-      <Spacer />
-      <Button
-        w="full"
-        leftIcon={<FaCog />}
-        variant="outline"
-        as={Link}
-        to="/settings"
-      >
-        Settings
-      </Button>
     </VStack>
   );
 }

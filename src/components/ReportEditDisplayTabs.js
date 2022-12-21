@@ -19,7 +19,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { SettingsContext } from "./SettingsForm";
 import sampleReports from "../assets/sample_reports.json";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -74,7 +73,6 @@ export default function ReportEditDisplayTabs({
   onProcessRequest,
   ...props
 }) {
-  const { settings } = useContext(SettingsContext);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [displayText, setDisplayText] = useState("");
@@ -112,9 +110,7 @@ export default function ReportEditDisplayTabs({
     setLoading(true);
     setTabIndex(1);
     axios
-      .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [
-        { text: inputText, model_name: settings.entities.engine },
-      ])
+      .post(process.env.REACT_APP_ENTITIES_ENDPOINT, [{ text: inputText }])
       .then((r) => {
         onEntitySelect(null);
         setDisplayText(generateDisplayText(r.data[0]));

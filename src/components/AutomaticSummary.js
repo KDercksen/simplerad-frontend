@@ -5,12 +5,10 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
-import { SettingsContext } from "./SettingsForm";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AutomaticSummary({ reportText, ...props }) {
-  const { settings } = useContext(SettingsContext);
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -20,9 +18,7 @@ export default function AutomaticSummary({ reportText, ...props }) {
     async function callApi() {
       setLoading(true);
       axios
-        .post(process.env.REACT_APP_SUMMARIZE_ENDPOINT, [
-          { text: reportText, model_name: settings.summarize.engine },
-        ])
+        .post(process.env.REACT_APP_SUMMARIZE_ENDPOINT, [{ text: reportText }])
         .then((r) => {
           setSummary(r.data[0].summary);
           setLoading(false);
@@ -49,7 +45,7 @@ export default function AutomaticSummary({ reportText, ...props }) {
     if (reportText !== null && enabled) {
       callApi();
     }
-  }, [reportText, settings.summarize.engine, toast, enabled]);
+  }, [reportText, toast, enabled]);
 
   function content() {
     if (!enabled) {

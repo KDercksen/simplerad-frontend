@@ -7,8 +7,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { SettingsContext } from "./SettingsForm";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Entity({ score, entity, ...props }) {
@@ -40,7 +39,6 @@ function Entity({ score, entity, ...props }) {
 }
 
 export default function EntityInfo({ selectedEntity, ...props }) {
-  const { settings } = useContext(SettingsContext);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
 
@@ -50,7 +48,6 @@ export default function EntityInfo({ selectedEntity, ...props }) {
         .post(process.env.REACT_APP_SEARCH_ENDPOINT, [
           {
             text: term,
-            model_name: settings.search.engine,
           },
         ])
         .then((r) => {
@@ -68,7 +65,7 @@ export default function EntityInfo({ selectedEntity, ...props }) {
       setLoading(true);
       searchEntity(selectedEntity);
     }
-  }, [settings.search.engine, selectedEntity]);
+  }, [selectedEntity]);
 
   function content() {
     if (loading) {

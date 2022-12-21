@@ -2,7 +2,6 @@ import AutomaticSummary from "./AutomaticSummary";
 import EntityInfo from "./EntityInfo";
 import ReportEditDisplayTabs from "./ReportEditDisplayTabs";
 import EntityFrequency from "./EntityFrequency";
-import GPT3EntityExplainer from "./GPT3EntityExplainer";
 import { HStack, Spacer, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -39,16 +38,6 @@ export default function AggregatedView(props) {
       </VStack>
       <VStack w="30%" h="full">
         <EntityInfo
-          h="300px"
-          overflow="auto"
-          w="full"
-          p={3}
-          selectedEntity={selectedEntity}
-          borderWidth={3}
-          borderRadius={10}
-          borderColor="umc.grijs3"
-        />
-        <GPT3EntityExplainer
           h="300px"
           overflow="auto"
           w="full"

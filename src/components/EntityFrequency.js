@@ -7,13 +7,11 @@ import {
   InputGroup,
   Text,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
-import { SettingsContext } from "./SettingsForm";
+import { useState } from "react";
 import { ResponsivePie } from "@nivo/pie";
 import axios from "axios";
 
 export default function EntityFrequency(props) {
-  const { settings } = useContext(SettingsContext);
   const [query, setQuery] = useState("");
   const [frequency, setFrequency] = useState(null);
   const [sampleSize, setSampleSize] = useState(null);
@@ -22,12 +20,10 @@ export default function EntityFrequency(props) {
   async function handleSearch(term) {
     setLoading(true);
     axios
-      .post(process.env.REACT_APP_FREQUENCY_ENDPOINT, [
-        { text: term, model_name: settings.frequency.engine },
-      ])
+      .post(process.env.REACT_APP_FREQUENCY_ENDPOINT, [{ text: term }])
       .then((r) => {
-        setFrequency(r.data[0].estimated_frequency);
-        setSampleSize(r.data[0].sample_size);
+        setFrequency(r.data[0].global_frequency);
+        setSampleSize(r.data[0].global_certainty);
         setLoading(false);
       })
       .catch((e) => {
