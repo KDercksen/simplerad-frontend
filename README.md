@@ -35,6 +35,6 @@ For example:
 ```json
 [
   { "text": "Sample report text numero uno" },
-  { "text": "Sample report text numero duo" }
+  { "text": "Sample report text numero dos" }
 ]
 ```
