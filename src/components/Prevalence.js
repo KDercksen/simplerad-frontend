@@ -11,24 +11,24 @@ import { useState } from "react";
 import { ResponsivePie } from "@nivo/pie";
 import axios from "axios";
 
-export default function EntityFrequency(props) {
+export default function Prevalence(props) {
   const [query, setQuery] = useState("");
-  const [frequency, setFrequency] = useState(null);
-  const [sampleSize, setSampleSize] = useState(null);
+  const [prevalence, setPrevalence] = useState(null);
+  const [certainty, setCertainty] = useState(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSearch(term) {
     setLoading(true);
     axios
-      .post(process.env.REACT_APP_FREQUENCY_ENDPOINT, [{ text: term }])
+      .post(process.env.REACT_APP_PREVALENCE_ENDPOINT, [{ text: term }])
       .then((r) => {
-        setFrequency(r.data[0].global_frequency);
-        setSampleSize(r.data[0].global_certainty);
+        setPrevalence(r.data[0].global_prevalence);
+        setCertainty(r.data[0].global_certainty);
         setLoading(false);
       })
       .catch((e) => {
-        setFrequency(null);
-        setSampleSize(null);
+        setPrevalence(null);
+        setCertainty(null);
         setLoading(false);
         console.log(e);
       });
@@ -58,7 +58,7 @@ export default function EntityFrequency(props) {
   function content() {
     if (loading) {
       return <CircularProgress isIndeterminate />;
-    } else if (frequency === null || sampleSize === null) {
+    } else if (prevalence === null || certainty === null) {
       return (
         <Text color="umc.grijs2">
           No frequency information available for this entity.
@@ -68,21 +68,21 @@ export default function EntityFrequency(props) {
       const freqdata = [
         {
           id: "% of corpus with similar observations",
-          value: (frequency * 100).toFixed(0),
+          value: (prevalence * 100).toFixed(0),
         },
         {
           id: "% of corpus without similar observations",
-          value: ((1 - frequency) * 100).toFixed(0),
+          value: ((1 - prevalence) * 100).toFixed(0),
         },
       ];
       const sampledata = [
         {
           id: "estimation certainty",
-          value: (sampleSize * 100).toFixed(0),
+          value: (certainty * 100).toFixed(0),
         },
         {
           id: "estimation uncertainty",
-          value: ((1 - sampleSize) * 100).toFixed(0),
+          value: ((1 - certainty) * 100).toFixed(0),
         },
       ];
 

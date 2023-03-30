@@ -1,7 +1,7 @@
 import AutomaticSummary from "./AutomaticSummary";
 import EntityInfo from "./EntityInfo";
 import ReportEditDisplayTabs from "./ReportEditDisplayTabs";
-import EntityFrequency from "./EntityFrequency";
+import Prevalence from "./Prevalence";
 import { HStack, Spacer, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -47,7 +47,7 @@ export default function AggregatedView(props) {
           borderRadius={10}
           borderColor="umc.grijs3"
         />
-        <EntityFrequency
+        <Prevalence
           h="260px"
           w="full"
           p={3}
