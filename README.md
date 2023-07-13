@@ -21,10 +21,9 @@ Make sure to put the following environment variables in a file like `.env.local`
 ```bash
 REACT_APP_API_DOMAIN=http://localhost:8000 # url of backend API
 REACT_APP_ENTITIES_ENDPOINT=$REACT_APP_API_DOMAIN/entities/
-REACT_APP_SUMMARIZE_ENDPOINT=$REACT_APP_API_DOMAIN/summarize/
 REACT_APP_SEARCH_ENDPOINT=$REACT_APP_API_DOMAIN/search/
-REACT_APP_FREQUENCY_ENDPOINT=$REACT_APP_API_DOMAIN/frequency/
-REACT_APP_EXPLANATION_ENDPOINT=$REACT_APP_API_DOMAIN/explanation/
+REACT_APP_PREVALENCE_ENDPOINT=$REACT_APP_API_DOMAIN/prevalence
+REACT_APP_SUMMARIZE_ENDPOINT=$REACT_APP_API_DOMAIN/summarize/
 ```
 
 In order to add sample reports for ease of e.g. testing, create a json file
