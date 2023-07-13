@@ -21,8 +21,7 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function handleGlobalSearch(term) {
-      setLoading(true);
+    function handleGlobalSearch(term) {
       axios
         .post(process.env.REACT_APP_PREVALENCE_ENDPOINT + "global/", [
           { text: term },
@@ -31,19 +30,16 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
           // set prevalence values
           setGlobalPrevalence(r.data[0].prevalence);
           setGlobalCertainty(r.data[0].certainty);
-          setLoading(false);
         })
         .catch((e) => {
           // prevalence values
           setGlobalPrevalence(null);
           // certainty values
           setGlobalCertainty(null);
-          setLoading(false);
           console.log(e);
         });
     }
-    async function handleLocalSearch(term, context) {
-      setLoading(true);
+    function handleLocalSearch(term, context) {
       axios
         .post(process.env.REACT_APP_PREVALENCE_ENDPOINT + "local/", [
           { text: term, context: context },
@@ -51,31 +47,32 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
         .then((r) => {
           setLocalPrevalence(r.data[0].prevalence);
           setLocalCertainty(r.data[0].certainty);
-          setLoading(false);
         })
         .catch((e) => {
           setLocalPrevalence(null);
           setLocalCertainty(null);
-          setLoading(false);
           console.log(e);
         });
     }
     if (!(selectedSentence === null || selectedSentence === "")) {
+      setLoading(true);
       handleGlobalSearch(selectedSentence);
       handleLocalSearch(selectedSentence, reportText);
+      setLoading(false);
     }
   }, [selectedSentence, reportText]);
 
   function content() {
     // prevalence values are either all null or not, so just checking one of them is enough here.
-    if (selectedSentence === null || globalPrevalence === null) {
+    if (selectedSentence === null) {
       return (
         <Text color="umc.grijs2">
           Select any sentence to view prevalence information.
         </Text>
       );
     } else {
-      if (loading) {
+      if (loading || globalPrevalence === null || localPrevalence === null) {
+        console.log("loading");
         return <CircularProgress isIndeterminate />;
       } else {
         return (

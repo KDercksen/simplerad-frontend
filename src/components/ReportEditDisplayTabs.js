@@ -43,14 +43,15 @@ function SampleReportMenu({ setInputText, ...props }) {
 
 function Entity({ children, ...props }) {
   const [hover, setHover] = useState(false);
-  const unselected = "umc.lichtblauw";
+  // const unselected = "umc.lichtblauw";
+  const unselected = "rgba(0, 175, 220, 0.2)";
   const selected = "umc.donkerblauw";
-  const color = "white";
+  const color = "black";
 
   return (
     <Text
       bg={hover ? selected : unselected}
-      color={color}
+      color={hover ? "white" : color}
       padding="2px 4px"
       borderRadius={5}
       as="mark"
