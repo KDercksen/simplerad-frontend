@@ -1,174 +1,139 @@
 import {
   Box,
-  Button,
   CircularProgress,
+  Stat,
   HStack,
-  Input,
-  InputGroup,
+  StatNumber,
+  StatLabel,
+  Tooltip,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { ResponsivePie } from "@nivo/pie";
+import { FaQuestionCircle } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { theme } from "../theme.js";
 
-export default function Prevalence(props) {
-  const [query, setQuery] = useState("");
-  const [prevalence, setPrevalence] = useState(null);
-  const [certainty, setCertainty] = useState(null);
+export default function Prevalence({ selectedSentence, reportText, ...props }) {
+  const [globalPrevalence, setGlobalPrevalence] = useState(null);
+  const [globalCertainty, setGlobalCertainty] = useState(null);
+  const [localPrevalence, setLocalPrevalence] = useState(null);
+  const [localCertainty, setLocalCertainty] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSearch(term) {
-    setLoading(true);
-    axios
-      .post(process.env.REACT_APP_PREVALENCE_ENDPOINT, [{ text: term }])
-      .then((r) => {
-        setPrevalence(r.data[0].global_prevalence);
-        setCertainty(r.data[0].global_certainty);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setPrevalence(null);
-        setCertainty(null);
-        setLoading(false);
-        console.log(e);
-      });
-  }
-
-  function makeCenteredMetric(labels, colors) {
-    const CenteredMetric = ({ dataWithArc, centerX, centerY }) => {
-      const idx = Math.min(
-        parseInt(dataWithArc[0].data.value / 25),
-        labels.length - 1
-      );
-      return (
-        <text
-          x={centerX}
-          y={centerY / 1.2}
-          textAnchor="middle"
-          dominantBaseline="text-bottom"
-          style={{ fill: colors[idx], fontSize: "24px", fontWeight: 300 }}
-        >
-          {labels[idx]}
-        </text>
-      );
-    };
-    return CenteredMetric;
-  }
+  useEffect(() => {
+    async function handleGlobalSearch(term) {
+      setLoading(true);
+      axios
+        .post(process.env.REACT_APP_PREVALENCE_ENDPOINT + "global/", [
+          { text: term },
+        ])
+        .then((r) => {
+          // set prevalence values
+          setGlobalPrevalence(r.data[0].prevalence);
+          setGlobalCertainty(r.data[0].certainty);
+          setLoading(false);
+        })
+        .catch((e) => {
+          // prevalence values
+          setGlobalPrevalence(null);
+          // certainty values
+          setGlobalCertainty(null);
+          setLoading(false);
+          console.log(e);
+        });
+    }
+    async function handleLocalSearch(term, context) {
+      setLoading(true);
+      axios
+        .post(process.env.REACT_APP_PREVALENCE_ENDPOINT + "local/", [
+          { text: term, context: context },
+        ])
+        .then((r) => {
+          setLocalPrevalence(r.data[0].prevalence);
+          setLocalCertainty(r.data[0].certainty);
+          setLoading(false);
+        })
+        .catch((e) => {
+          setLocalPrevalence(null);
+          setLocalCertainty(null);
+          setLoading(false);
+          console.log(e);
+        });
+    }
+    if (!(selectedSentence === null || selectedSentence === "")) {
+      handleGlobalSearch(selectedSentence);
+      handleLocalSearch(selectedSentence, reportText);
+    }
+  }, [selectedSentence, reportText]);
 
   function content() {
-    if (loading) {
-      return <CircularProgress isIndeterminate />;
-    } else if (prevalence === null || certainty === null) {
+    // prevalence values are either all null or not, so just checking one of them is enough here.
+    if (selectedSentence === null || globalPrevalence === null) {
       return (
         <Text color="umc.grijs2">
-          No frequency information available for this entity.
+          Select any sentence to view prevalence information.
         </Text>
       );
     } else {
-      const freqdata = [
-        {
-          id: "% of corpus with similar observations",
-          value: (prevalence * 100).toFixed(0),
-        },
-        {
-          id: "% of corpus without similar observations",
-          value: ((1 - prevalence) * 100).toFixed(0),
-        },
-      ];
-      const sampledata = [
-        {
-          id: "estimation certainty",
-          value: (certainty * 100).toFixed(0),
-        },
-        {
-          id: "estimation uncertainty",
-          value: ((1 - certainty) * 100).toFixed(0),
-        },
-      ];
-
-      return (
-        <>
-          <ResponsivePie
-            data={freqdata}
-            margin={{ top: -70, bottom: 0, left: 5, right: 5 }}
-            colors={{ scheme: "paired" }}
-            innerRadius={0.7}
-            activeOuterRadiusOffset={5}
-            padAngle={0.5}
-            cornerRadius={5}
-            startAngle={270}
-            endAngle={450}
-            enableArcLinkLabels={false}
-            arcLabel={(item) => {
-              return item.value > 5 ? `${item.value}%` : "";
-            }}
-            arcLabelsTextColor="white"
-            layers={[
-              "arcs",
-              "arcLabels",
-              "arcLinkLabels",
-              "legends",
-              makeCenteredMetric(
-                ["rare", "uncommon", "common", "very common"],
-                ["red", "orange", "darkgreen", "green"]
-              ),
-            ]}
-          />
-          <ResponsivePie
-            data={sampledata}
-            margin={{ top: -70, bottom: 0, left: 5, right: 5 }}
-            colors={{ scheme: "paired" }}
-            innerRadius={0.7}
-            activeOuterRadiusOffset={5}
-            padAngle={0.5}
-            cornerRadius={5}
-            startAngle={270}
-            endAngle={450}
-            enableArcLinkLabels={false}
-            arcLabel={(item) => {
-              return item.value > 5 ? `${item.value}%` : "";
-            }}
-            arcLabelsTextColor="white"
-            layers={[
-              "arcs",
-              "arcLabels",
-              "arcLinkLabels",
-              "legends",
-              makeCenteredMetric(
-                ["very uncertain", "uncertain", "certain", "very certain"],
-                ["red", "orange", "darkgreen", "green"]
-              ),
-            ]}
-          />
-        </>
-      );
+      if (loading) {
+        return <CircularProgress isIndeterminate />;
+      } else {
+        return (
+          <>
+            <Text fontWeight="bold">Query:</Text>
+            <Text color="umc.grijs2">{selectedSentence}</Text>
+            <Text fontWeight="bold" py={2}>
+              Prevalence statistics:
+            </Text>
+            <HStack spacing={8}>
+              <Box p={3} borderWidth={1} borderRadius={5}>
+                <HStack spacing={1}>
+                  <Tooltip label="How often do similar findings occur in patient reports regardless of context?">
+                    <span>
+                      <FaQuestionCircle color={theme.colors.umc.donkerblauw} />
+                    </span>
+                  </Tooltip>
+                  <Text fontWeight="bold">Global:</Text>
+                </HStack>
+                <Stat>
+                  <StatNumber>
+                    {globalPrevalence.toFixed(2).toString()}
+                  </StatNumber>
+                </Stat>
+                <Stat size="sm">
+                  <StatLabel color="umc.grijs2">Certainty:</StatLabel>
+                  <StatNumber color="umc.grijs2">
+                    {globalCertainty.toFixed(2).toString()}
+                  </StatNumber>
+                </Stat>
+              </Box>
+              <Box p={3} borderWidth={1} borderRadius={5}>
+                <HStack spacing={1}>
+                  <Tooltip label="How often do similar findings occur in patient reports similar to this one?">
+                    <span>
+                      <FaQuestionCircle color={theme.colors.umc.donkerblauw} />
+                    </span>
+                  </Tooltip>
+                  <Text fontWeight="bold">Local:</Text>
+                </HStack>
+                <Stat>
+                  <StatNumber>
+                    {localPrevalence.toFixed(2).toString()}
+                  </StatNumber>
+                </Stat>
+                <Stat size="sm">
+                  <StatLabel color="umc.grijs2">Certainty:</StatLabel>
+                  <StatNumber color="umc.grijs2">
+                    {localCertainty.toFixed(2).toString()}
+                  </StatNumber>
+                </Stat>
+              </Box>
+            </HStack>
+          </>
+        );
+      }
     }
   }
 
-  return (
-    <Box {...props}>
-      <Box>
-        <InputGroup>
-          <Input
-            onChange={(e) => {
-              setQuery(e.target.value);
-            }}
-            placeholder="Observation query"
-          />
-          <Button
-            ml={2}
-            type="submit"
-            onClick={() => {
-              handleSearch(query);
-            }}
-          >
-            Submit
-          </Button>
-        </InputGroup>
-      </Box>
-      <HStack align="top" px={3} mt={5} w="full" h="full">
-        {content()}
-      </HStack>
-    </Box>
-  );
+  return <Box {...props}>{content()}</Box>;
 }

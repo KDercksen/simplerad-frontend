@@ -42,7 +42,7 @@ function SampleReportMenu({ setInputText, ...props }) {
 }
 
 function Entity({ children, ...props }) {
-  const [hover, setHover] = useState("");
+  const [hover, setHover] = useState(false);
   const unselected = "umc.lichtblauw";
   const selected = "umc.donkerblauw";
   const color = "white";
@@ -54,10 +54,10 @@ function Entity({ children, ...props }) {
       padding="2px 4px"
       borderRadius={5}
       as="mark"
-      onMouseOver={(e) => {
+      onMouseOver={(_) => {
         setHover(true);
       }}
-      onMouseOut={(e) => {
+      onMouseOut={(_) => {
         setHover(false);
       }}
       cursor="pointer"
@@ -68,8 +68,32 @@ function Entity({ children, ...props }) {
   );
 }
 
+function LinkedSentence({ children, ...props }) {
+  const [hover, setHover] = useState(false);
+  const selected = "umc.donkerblauw";
+  const color = "black";
+
+  return (
+    <Text
+      color={hover ? selected : color}
+      as="a"
+      onMouseOver={(_) => {
+        setHover(true);
+      }}
+      onMouseOut={(_) => {
+        setHover(false);
+      }}
+      cursor="help"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+}
+
 export default function ReportEditDisplayTabs({
   onEntitySelect,
+  onSentenceSelect,
   onProcessRequest,
   ...props
 }) {
@@ -81,28 +105,94 @@ export default function ReportEditDisplayTabs({
 
   const inputIsError = inputText === "";
 
+  function getLinkSpans(spans, sentenceSpans) {
+    spans.sort((a, b) => a.start - b.start);
+    sentenceSpans.sort((a, b) => a.start - b.start);
+    const merged = [];
+
+    const docLen = sentenceSpans[sentenceSpans.length - 1].end;
+
+    // make a list of zeros of length endIdx
+    // this list will indicate where entities and non-entities are
+    let charTypes = new Array(docLen).fill(0);
+    // set the entity spans to 1
+    for (let span of spans) {
+      charTypes.fill(1, span.start, span.end);
+    }
+    // set the end of each sentence to 2 to act as an artificial boundary
+    for (let sent of sentenceSpans) {
+      charTypes[sent.end] = 2;
+    }
+
+    // find the start and end of each consecutive sequence of 0s in charTypes
+    let start = 0;
+    let end = 0;
+    let i = 0;
+    let sentIdx = 0;
+    while (i < charTypes.length) {
+      let currentSent = sentenceSpans[sentIdx];
+      if (charTypes[i] === 0) {
+        start = i;
+        while (i < charTypes.length && charTypes[i] === 0) {
+          i++;
+        }
+        // artificial extra increase for newlines
+        if (charTypes[i] === 2) {
+          i++;
+          sentIdx++;
+        }
+        end = i;
+        if (end - start > 0) {
+          // not sure if this is actually necessary
+          merged.push({ start: start, end: end, link: currentSent.text });
+        }
+      } else {
+        i++;
+      }
+    }
+
+    return merged;
+  }
+
   function generateDisplayText(responseMap) {
     const sentencized = responseMap.text;
+    let matches = [...sentencized.matchAll(/^.*?$/gm)];
+    let sentenceSpans = matches.map((m) => {
+      return { start: m.index, end: m.index + m[0].length, text: m[0] };
+    });
+    // sentence spans with appropriate link values
+    let linkSpans = getLinkSpans(responseMap.spans, sentenceSpans).map((s) => {
+      return { ...s, text: sentencized.slice(s.start, s.end) };
+    });
+    let combinedSpans = [...linkSpans, ...responseMap.spans].toSorted(
+      (a, b) => a.start - b.start
+    );
     let segments = [];
-    let span;
-    let lastSeen = 0;
-    for (span of responseMap.spans) {
-      const { start, end, text } = span;
-      segments.push(sentencized.slice(lastSeen, start));
-      segments.push(
-        <Entity
-          onClick={(e) => {
-            onEntitySelect(text);
-          }}
-          key={start.toString()}
-        >
-          {text}
-        </Entity>
-      );
-      lastSeen = end;
+    for (let span of combinedSpans) {
+      if ("link" in span) {
+        segments.push(
+          <LinkedSentence
+            onClick={(_) => {
+              onSentenceSelect(span.link);
+            }}
+            key={span.start.toString()}
+          >
+            {span.text}
+          </LinkedSentence>
+        );
+      } else {
+        segments.push(
+          <Entity
+            onClick={(_) => {
+              onEntitySelect(span.text);
+            }}
+            key={span.start.toString()}
+          >
+            {span.text}
+          </Entity>
+        );
+      }
     }
-    segments.push(sentencized.slice(lastSeen));
-    console.log(segments);
     return segments;
   }
 

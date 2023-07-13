@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function AggregatedView(props) {
   const [reportText, setReportText] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
+  const [selectedSentence, setSelectedSentence] = useState(null);
 
   const handleReportSubmit = (reportText) => {
     setReportText(reportText);
@@ -22,6 +23,7 @@ export default function AggregatedView(props) {
           // custom props
           onProcessRequest={handleReportSubmit}
           onEntitySelect={setSelectedEntity}
+          onSentenceSelect={setSelectedSentence}
           borderWidth={3}
           borderRadius={10}
           borderColor="umc.grijs3"
@@ -48,10 +50,11 @@ export default function AggregatedView(props) {
           borderColor="umc.grijs3"
         />
         <Prevalence
-          h="260px"
+          minH="260px"
           w="full"
           p={3}
-          selectedEntity={selectedEntity}
+          selectedSentence={selectedSentence}
+          reportText={reportText}
           borderWidth={3}
           borderRadius={10}
           borderColor="umc.grijs3"
