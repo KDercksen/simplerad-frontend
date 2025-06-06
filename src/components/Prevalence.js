@@ -13,6 +13,30 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { theme } from "../theme.js";
 
+const prevalenceScoreToText = (score) => {
+  if (score < 0.05) {
+    return "very rare";
+  } else if (score < 0.1) {
+    return "rare";
+  } else if (score < 0.2) {
+    return "common";
+  } else {
+    return "very common";
+  }
+};
+
+const certaintyScoreToText = (score) => {
+  if (score < 0.2) {
+    return "very uncertain";
+  } else if (score < 0.4) {
+    return "uncertain";
+  } else if (score < 0.6) {
+    return "likely";
+  } else {
+    return "very certain";
+  }
+};
+
 export default function Prevalence({ selectedSentence, reportText, ...props }) {
   const [globalPrevalence, setGlobalPrevalence] = useState(null);
   const [globalCertainty, setGlobalCertainty] = useState(null);
@@ -82,8 +106,8 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
             <Text fontWeight="bold" py={2}>
               Prevalence statistics:
             </Text>
-            <HStack spacing={8}>
-              <Box p={3} borderWidth={1} borderRadius={5}>
+            <HStack spacing={8} w="100%">
+              <Box w="100%" p={3} borderWidth={1} borderRadius={5}>
                 <HStack spacing={1}>
                   <Tooltip label="How often do similar findings occur in patient reports regardless of context?">
                     <span>
@@ -93,18 +117,18 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
                   <Text fontWeight="bold">Global:</Text>
                 </HStack>
                 <Stat>
-                  <StatNumber>
-                    {globalPrevalence.toFixed(2).toString()}
+                  <StatNumber fontSize="3xl">
+                    {prevalenceScoreToText(globalPrevalence)}
                   </StatNumber>
                 </Stat>
                 <Stat size="sm">
                   <StatLabel color="umc.grijs2">Certainty:</StatLabel>
                   <StatNumber color="umc.grijs2">
-                    {globalCertainty.toFixed(2).toString()}
+                    {certaintyScoreToText(globalCertainty)}
                   </StatNumber>
                 </Stat>
               </Box>
-              <Box p={3} borderWidth={1} borderRadius={5}>
+              <Box w="100%" p={3} borderWidth={1} borderRadius={5}>
                 <HStack spacing={1}>
                   <Tooltip label="How often do similar findings occur in patient reports similar to this one?">
                     <span>
@@ -114,14 +138,14 @@ export default function Prevalence({ selectedSentence, reportText, ...props }) {
                   <Text fontWeight="bold">Local:</Text>
                 </HStack>
                 <Stat>
-                  <StatNumber>
-                    {localPrevalence.toFixed(2).toString()}
+                  <StatNumber fontSize="3xl">
+                    {prevalenceScoreToText(localPrevalence)}
                   </StatNumber>
                 </Stat>
                 <Stat size="sm">
                   <StatLabel color="umc.grijs2">Certainty:</StatLabel>
                   <StatNumber color="umc.grijs2">
-                    {localCertainty.toFixed(2).toString()}
+                    {certaintyScoreToText(localCertainty)}
                   </StatNumber>
                 </Stat>
               </Box>
